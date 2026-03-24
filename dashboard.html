@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <title>Sister's Dashboard</title>
+    <style>
+      :root[data-theme="light"] {
+        --bg: #eef2f3;
+        --card: #ffffff;
+        --text: #333;
+      }
+      :root[data-theme="dark"] {
+        --bg: #1a1a2e;
+        --card: #16213e;
+        --text: #fff;
+      }
+      body {
+        font-family: sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 20px;
+        text-align: center;
+        transition: 0.3s;
+      }
+      .card {
+        background: var(--card);
+        max-width: 380px;
+        margin: auto;
+        padding: 30px;
+        border-radius: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      }
+      .count {
+        font-size: 80px;
+        color: #6a11cb;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+      .progress-bar {
+        height: 8px;
+        background: #6a11cb;
+        border-radius: 10px;
+        margin-top: 5px;
+        width: 0%;
+        transition: 1s;
+      }
+      #cooldownMsg {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: none;
+      }
+      button {
+        width: 100%;
+        padding: 15px;
+        border-radius: 15px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-redeem {
+        background: #28a745;
+        color: white;
+      }
+      .btn-redeem:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <p
+        style="text-transform: uppercase; font-size: 12px; letter-spacing: 1px"
+      >
+        Lifetime Rewards Level
+      </p>
+      <div
+        style="
+          background: #eee;
+          height: 8px;
+          border-radius: 10px;
+          overflow: hidden;
+        "
+      >
+        <div id="progBar" class="progress-bar"></div>
+      </div>
+
+      <div class="count" id="countDisplay">0</div>
+      <p>Available Redeems</p>
+
+      <input
+        type="text"
+        id="task"
+        placeholder="What do you need?"
+        style="
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 15px;
+          border-radius: 10px;
+          border: 1px solid #ddd;
+          box-sizing: border-box;
+        "
+      />
+
+      <button id="redeemBtn" class="btn-redeem" onclick="runRedeem()">
+        Redeem Help
+      </button>
+      <div id="cooldownMsg">Cooldown Active: Please wait 10 seconds.</div>
+
+      <a
+        href="index.html"
+        style="
+          display: block;
+          margin-top: 20px;
+          color: #888;
+          text-decoration: none;
+          font-size: 12px;
+        "
+        >Logout</a
+      >
+    </div>
+
+    <script>
+      function updateUI() {
+        const theme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", theme);
+
+        const status = localStorage.getItem("sysStatus") || "Online";
+        const redeems = parseInt(localStorage.getItem("totalRedeems") || 0);
+        const lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
+
+        document.getElementById("countDisplay").innerText = redeems;
+        document.getElementById("progBar").style.width =
+          (lifetime % 50) * 2 + "%";
+
+        const btn = document.getElementById("redeemBtn");
+        const isCooldown = localStorage.getItem("cooldownActive") === "true";
+
+        if (status === "Offline" || isCooldown || redeems <= 0) {
+          btn.disabled = true;
+          if (isCooldown)
+            document.getElementById("cooldownMsg").style.display = "block";
+        } else {
+          btn.disabled = false;
+          document.getElementById("cooldownMsg").style.display = "none";
+        }
+      }
+
+      function runRedeem() {
+        let redeems = parseInt(localStorage.getItem("totalRedeems") || 0);
+        let lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
+
+        if (redeems > 0) {
+          // 1. Update Counts
+          localStorage.setItem("totalRedeems", redeems - 1);
+          localStorage.setItem("lifetimeHelp", lifetime + 1);
+
+          // 2. Add to History
+          let history = JSON.parse(localStorage.getItem("helpHistory") || "[]");
+          history.push({
+            task: document.getElementById("task").value || "Help",
+            date: new Date().toLocaleDateString(),
+          });
+          localStorage.setItem("helpHistory", JSON.stringify(history));
+
+          // 3. Set Cooldown (10 seconds for testing - you can change to 3600 for 1 hour)
+          localStorage.setItem("cooldownActive", "true");
+          setTimeout(() => {
+            localStorage.setItem("cooldownActive", "false");
+            updateUI();
+          }, 10000);
+
+          alert("Redeem Successful!");
+          updateUI();
+        }
+      }
+
+      setInterval(updateUI, 1000);
+      updateUI();
+    </script>
+  </body>
+</html>

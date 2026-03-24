@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sibling Help App</title>
+    <style>
+      :root[data-theme="light"] {
+        --bg: #f0f2f5;
+        --card: #ffffff;
+        --text: #333;
+        --primary: #6a11cb;
+      }
+      :root[data-theme="dark"] {
+        --bg: #1a1a2e;
+        --card: #16213e;
+        --text: #e9ecef;
+        --primary: #4e0891;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        transition: 0.3s;
+      }
+      .login-card {
+        background: var(--card);
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        width: 300px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text);
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .theme-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 50%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
+    <div class="login-card">
+      <h2>Help App</h2>
+      <input type="text" id="user" placeholder="Username" />
+      <input type="password" id="pass" placeholder="Secret Code" />
+      <button onclick="login()">Enter Dashboard</button>
+    </div>
+    <script>
+      function toggleTheme() {
+        const current = document.documentElement.getAttribute("data-theme");
+        const target = current === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", target);
+        localStorage.setItem("theme", target);
+      }
+      function login() {
+        const u = document.getElementById("user").value.toLowerCase();
+        const p = document.getElementById("pass").value;
+        if (u === "admin" && p === "admin123")
+          window.location.href = "admin.html";
+        else if (u === "user1" && p === "magic7")
+          window.location.href = "dashboard.html";
+        else alert("Invalid Access!");
+      }
+      document.documentElement.setAttribute(
+        "data-theme",
+        localStorage.getItem("theme") || "light",
+      );
+    </script>
+  </body>
+</html>
