@@ -1,65 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="light">
-  <head meta name="robots" content="noindex">
-    <title>Admin Command</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Akash</title>
     <style>
-      :root[data-theme="light"] {
-        --bg: #f4f7f6;
-        --card: #fff;
-        --text: #333;
-      }
-      :root[data-theme="dark"] {
-        --bg: #121212;
-        --card: #1e1e1e;
-        --text: #fff;
-      }
       body {
         font-family: sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        padding: 20px;
-        transition: 0.3s;
+        background: #f4f7f6;
+        padding: 15px;
+        margin: 0;
       }
       .container {
         max-width: 500px;
         margin: auto;
-        background: var(--card);
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-      .alert-box {
-        background: #ff4757;
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        display: none;
-        animation: shake 0.5s;
-      }
-      @keyframes shake {
-        0% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(5px);
-        }
-        50% {
-          transform: translateX(-5px);
-        }
-        100% {
-          transform: translateX(0);
-        }
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
       .status-btn {
         width: 100%;
-        padding: 15px;
-        border-radius: 10px;
+        padding: 20px;
+        border-radius: 12px;
         border: none;
         color: white;
         font-weight: bold;
+        font-size: 18px;
         cursor: pointer;
-        margin-bottom: 20px;
       }
       .online {
         background: #28a745;
@@ -67,116 +35,59 @@
       .offline {
         background: #dc3545;
       }
-      .progress-bar {
-        background: #eee;
-        border-radius: 10px;
-        height: 12px;
-        margin: 10px 0;
-        overflow: hidden;
-      }
-      .fill {
-        background: #6a11cb;
-        height: 100%;
-        width: 0%;
-        transition: 0.5s;
-      }
       input {
         width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 10px;
+        padding: 15px;
+        margin: 15px 0;
         border: 1px solid #ddd;
+        border-radius: 10px;
         box-sizing: border-box;
+      }
+      .update-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 15px;
+        width: 100%;
+        border-radius: 10px;
+        font-size: 16px;
+      }
+      .log-box {
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div id="monthAlert" class="alert-box">
-        <strong>⚠️ NEW MONTH DETECTED!</strong><br />
-        It is now <span id="newMonthName"></span>. Please set the new redeem
-        limit below.
-      </div>
-
-      <h2>Admin Control</h2>
-      <button id="sysToggle" class="status-btn online" onclick="toggleSys()">
+      <h2>Admin Panel</h2>
+      <button id="sysToggle" class="status-btn online" onclick="toggleStatus()">
         System: ACTIVE
       </button>
 
-      <h3>Lifetime Progress</h3>
-      <div class="progress-bar"><div id="prog" class="fill"></div></div>
-      <p style="font-size: 12px; color: #888">
-        Total Redeems: <span id="lifetimeCount">0</span>
-      </p>
-
-      <div style="border-top: 1px solid #eee; padding-top: 15px">
-        <h3>Monthly Reset</h3>
-        <p id="currentSetting" style="font-size: 14px; color: #666"></p>
-        <input type="number" id="amt" placeholder="Enter new monthly limit" />
-        <button
-          onclick="save()"
-          style="
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-          "
-        >
-          Update System
-        </button>
+      <div class="log-box">
+        <h3>Set Aishwarya's Redeems</h3>
+        <input type="number" id="amt" placeholder="Number of Redeems" />
+        <button class="update-btn" onclick="save()">Update Credits</button>
       </div>
       <br />
       <button
         onclick="window.location.href = 'index.html'"
-        style="background: none; border: none; color: #888; cursor: pointer"
+        style="
+          background: none;
+          border: none;
+          color: gray;
+          width: 100%;
+          cursor: pointer;
+        "
       >
         Logout
       </button>
     </div>
 
     <script>
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      const currentRealMonth = monthNames[new Date().getMonth()];
-
-      function checkMonth() {
-        const lastSavedMonth = localStorage.getItem("savedMonth");
-        if (lastSavedMonth && lastSavedMonth !== currentRealMonth) {
-          document.getElementById("monthAlert").style.display = "block";
-          document.getElementById("newMonthName").innerText = currentRealMonth;
-          // Silently reset user count to 0 until admin updates
-          localStorage.setItem("totalRedeems", 0);
-        }
-      }
-
-      function save() {
-        const val = document.getElementById("amt").value;
-        if (!val) return alert("Please enter a number!");
-
-        localStorage.setItem("totalRedeems", val);
-        localStorage.setItem("savedMonth", currentRealMonth);
-        document.getElementById("monthAlert").style.display = "none";
-        alert(`Success! ${val} redeems set for ${currentRealMonth}.`);
-        render();
-      }
-
-      function toggleSys() {
+      function toggleStatus() {
         let s =
           localStorage.getItem("sysStatus") === "Offline"
             ? "Online"
@@ -184,28 +95,23 @@
         localStorage.setItem("sysStatus", s);
         render();
       }
-
+      function save() {
+        localStorage.setItem(
+          "totalRedeems",
+          document.getElementById("amt").value,
+        );
+        localStorage.setItem(
+          "savedMonth",
+          new Date().toLocaleString("default", { month: "long" }),
+        );
+        alert("Sent to Aishwarya's Dashboard!");
+      }
       function render() {
         const s = localStorage.getItem("sysStatus") || "Online";
         const btn = document.getElementById("sysToggle");
         btn.innerText = s === "Online" ? "System: ACTIVE" : "System: BUSY";
         btn.className = `status-btn ${s === "Online" ? "online" : "offline"}`;
-
-        const lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
-        document.getElementById("lifetimeCount").innerText = lifetime;
-        document.getElementById("prog").style.width = (lifetime % 50) * 2 + "%";
-
-        const savedM = localStorage.getItem("savedMonth") || "None";
-        const savedC = localStorage.getItem("totalRedeems") || 0;
-        document.getElementById("currentSetting").innerText =
-          `Current: ${savedC} redeems for ${savedM}`;
       }
-
-      document.documentElement.setAttribute(
-        "data-theme",
-        localStorage.getItem("theme") || "light",
-      );
-      checkMonth();
       render();
     </script>
   </body>

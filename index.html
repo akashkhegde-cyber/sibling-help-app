@@ -1,99 +1,74 @@
 <!doctype html>
-<html lang="en" data-theme="light">
-  <head meta name="robots" content="noindex">
+<html lang="en">
+  <head>
     <meta charset="UTF-8" />
-    <title>Sibling Help App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sibling Help App - Login</title>
     <style>
-      :root[data-theme="light"] {
-        --bg: #f0f2f5;
-        --card: #ffffff;
-        --text: #333;
-        --primary: #6a11cb;
-      }
-      :root[data-theme="dark"] {
-        --bg: #1a1a2e;
-        --card: #16213e;
-        --text: #e9ecef;
-        --primary: #4e0891;
-      }
       body {
         font-family: "Segoe UI", sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         margin: 0;
-        transition: 0.3s;
+        padding: 20px;
+        box-sizing: border-box;
       }
       .login-card {
-        background: var(--card);
-        padding: 40px;
-        border-radius: 25px;
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        width: 300px;
+        width: 100%;
+        max-width: 350px;
         text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.1);
       }
       input {
         width: 100%;
-        padding: 12px;
+        padding: 15px;
         margin: 10px 0;
         border: 1px solid #ddd;
-        border-radius: 10px;
-        background: transparent;
-        color: var(--text);
+        border-radius: 12px;
+        box-sizing: border-box;
+        font-size: 16px; /* 16px prevents iOS zoom on focus */
       }
       button {
         width: 100%;
-        padding: 12px;
-        background: var(--primary);
+        padding: 15px;
+        background: #764ba2;
         color: white;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
+        font-size: 18px;
         font-weight: bold;
-      }
-      .theme-btn {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 50%;
-        border: none;
       }
     </style>
   </head>
   <body>
-    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
     <div class="login-card">
-      <h2>Help App</h2>
+      <h2>Help App Login</h2>
       <input type="text" id="user" placeholder="Username" />
-      <input type="password" id="pass" placeholder="Secret Code" />
-      <button onclick="login()">Enter Dashboard</button>
+      <input type="password" id="pass" placeholder="Password" />
+      <button onclick="login()">Enter</button>
     </div>
+
     <script>
-      function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme");
-        const target = current === "light" ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", target);
-        localStorage.setItem("theme", target);
-      }
       function login() {
-        const u = document.getElementById("user").value.toLowerCase();
+        const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
-        if (u === "admin" && p === "admin123")
+
+        // UPDATED CREDENTIALS
+        if (u === "Akash" && p === "akashforever") {
           window.location.href = "admin.html";
-        else if (u === "user1" && p === "magic7")
+        } else if (u === "Aishwarya" && p === "AISHU123BIRTHCB19") {
           window.location.href = "dashboard.html";
-        else alert("Invalid Access!");
+        } else {
+          alert("Incorrect Credentials!");
+        }
       }
-      document.documentElement.setAttribute(
-        "data-theme",
-        localStorage.getItem("theme") || "light",
-      );
     </script>
   </body>
 </html>

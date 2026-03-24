@@ -1,101 +1,87 @@
 <!doctype html>
-<html lang="en" data-theme="light">
-  <head meta name="robots" content="noindex">
-    <title>Sister's Dashboard</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aishwarya's Dashboard</title>
     <style>
-      :root[data-theme="light"] {
-        --bg: #eef2f3;
-        --card: #ffffff;
-        --text: #333;
-      }
-      :root[data-theme="dark"] {
-        --bg: #1a1a2e;
-        --card: #16213e;
-        --text: #fff;
-      }
       body {
         font-family: sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        background: #eef2f3;
+        margin: 0;
         padding: 20px;
-        text-align: center;
-        transition: 0.3s;
+        display: flex;
+        justify-content: center;
       }
       .card {
-        background: var(--card);
-        max-width: 380px;
-        margin: auto;
+        background: white;
+        width: 100%;
+        max-width: 400px;
         padding: 30px;
-        border-radius: 30px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border-radius: 25px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        text-align: center;
       }
       .count {
-        font-size: 80px;
+        font-size: 90px;
         color: #6a11cb;
         font-weight: bold;
         margin: 10px 0;
       }
-      .progress-bar {
-        height: 8px;
-        background: #6a11cb;
-        border-radius: 10px;
-        margin-top: 5px;
-        width: 0%;
-        transition: 1s;
-      }
-      #cooldownMsg {
-        color: #dc3545;
-        font-size: 0.8rem;
-        margin-top: 5px;
-        display: none;
-      }
-      button {
-        width: 100%;
-        padding: 15px;
-        border-radius: 15px;
-        border: none;
+      #statusTag {
+        font-size: 12px;
         font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 10px;
       }
       .btn-redeem {
+        width: 100%;
+        padding: 20px;
         background: #28a745;
         color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
       }
       .btn-redeem:disabled {
         background: #ccc;
-        cursor: not-allowed;
+      }
+      .progress-container {
+        background: #eee;
+        height: 10px;
+        border-radius: 5px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      .progress-bar {
+        background: #6a11cb;
+        height: 100%;
+        width: 0%;
+        transition: 1s;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <p
-        style="text-transform: uppercase; font-size: 12px; letter-spacing: 1px"
-      >
-        Lifetime Rewards Level
-      </p>
-      <div
-        style="
-          background: #eee;
-          height: 8px;
-          border-radius: 10px;
-          overflow: hidden;
-        "
-      >
-        <div id="progBar" class="progress-bar"></div>
+      <div id="statusTag">Checking Akash's Status...</div>
+      <div class="progress-container">
+        <div id="prog" class="progress-bar"></div>
       </div>
 
-      <div class="count" id="countDisplay">0</div>
-      <p>Available Redeems</p>
+      <p style="color: #888; margin: 0">Credits Available</p>
+      <div class="count" id="count">0</div>
 
       <input
         type="text"
         id="task"
-        placeholder="What do you need?"
+        placeholder="What do you need help with?"
         style="
           width: 100%;
-          padding: 12px;
+          padding: 15px;
           margin-bottom: 15px;
           border-radius: 10px;
           border: 1px solid #ddd;
@@ -103,19 +89,16 @@
         "
       />
 
-      <button id="redeemBtn" class="btn-redeem" onclick="runRedeem()">
-        Redeem Help
+      <button id="redeemBtn" class="btn-redeem" onclick="redeem()">
+        Redeem 1 Day
       </button>
-      <div id="cooldownMsg">Cooldown Active: Please wait 10 seconds.</div>
-
       <a
         href="index.html"
         style="
           display: block;
           margin-top: 20px;
-          color: #888;
+          color: #aaa;
           text-decoration: none;
-          font-size: 12px;
         "
         >Logout</a
       >
@@ -123,59 +106,39 @@
 
     <script>
       function updateUI() {
-        const theme = localStorage.getItem("theme") || "light";
-        document.documentElement.setAttribute("data-theme", theme);
-
         const status = localStorage.getItem("sysStatus") || "Online";
         const redeems = parseInt(localStorage.getItem("totalRedeems") || 0);
         const lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
 
-        document.getElementById("countDisplay").innerText = redeems;
-        document.getElementById("progBar").style.width =
-          (lifetime % 50) * 2 + "%";
+        document.getElementById("count").innerText = redeems;
+        document.getElementById("prog").style.width = (lifetime % 50) * 2 + "%";
 
+        const tag = document.getElementById("statusTag");
         const btn = document.getElementById("redeemBtn");
-        const isCooldown = localStorage.getItem("cooldownActive") === "true";
 
-        if (status === "Offline" || isCooldown || redeems <= 0) {
+        if (status === "Offline") {
+          tag.innerText = "AKASH IS BUSY";
+          tag.style.background = "#ffdce0";
+          tag.style.color = "#af233a";
           btn.disabled = true;
-          if (isCooldown)
-            document.getElementById("cooldownMsg").style.display = "block";
         } else {
-          btn.disabled = false;
-          document.getElementById("cooldownMsg").style.display = "none";
+          tag.innerText = "AKASH IS READY";
+          tag.style.background = "#d4edda";
+          tag.style.color = "#155724";
+          btn.disabled = redeems <= 0;
         }
       }
 
-      function runRedeem() {
-        let redeems = parseInt(localStorage.getItem("totalRedeems") || 0);
-        let lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
-
-        if (redeems > 0) {
-          // 1. Update Counts
-          localStorage.setItem("totalRedeems", redeems - 1);
-          localStorage.setItem("lifetimeHelp", lifetime + 1);
-
-          // 2. Add to History
-          let history = JSON.parse(localStorage.getItem("helpHistory") || "[]");
-          history.push({
-            task: document.getElementById("task").value || "Help",
-            date: new Date().toLocaleDateString(),
-          });
-          localStorage.setItem("helpHistory", JSON.stringify(history));
-
-          // 3. Set Cooldown (10 seconds for testing - you can change to 3600 for 1 hour)
-          localStorage.setItem("cooldownActive", "true");
-          setTimeout(() => {
-            localStorage.setItem("cooldownActive", "false");
-            updateUI();
-          }, 10000);
-
-          alert("Redeem Successful!");
+      function redeem() {
+        let r = parseInt(localStorage.getItem("totalRedeems") || 0);
+        let l = parseInt(localStorage.getItem("lifetimeHelp") || 0);
+        if (r > 0) {
+          localStorage.setItem("totalRedeems", r - 1);
+          localStorage.setItem("lifetimeHelp", l + 1);
+          alert("Redeem Successful! Akash has been notified.");
           updateUI();
         }
       }
-
       setInterval(updateUI, 1000);
       updateUI();
     </script>
