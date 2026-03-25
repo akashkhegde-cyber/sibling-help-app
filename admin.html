@@ -28,17 +28,13 @@
         font-weight: bold;
         font-size: 18px;
         cursor: pointer;
+        margin-bottom: 20px;
       }
       .online {
         background: #28a745;
       }
       .offline {
         background: #dc3545;
-      }
-      .section {
-        margin-top: 25px;
-        border-top: 1px solid #eee;
-        padding-top: 15px;
       }
       input {
         width: 100%;
@@ -56,89 +52,91 @@
         width: 100%;
         border-radius: 10px;
         font-weight: bold;
+        cursor: pointer;
       }
       .log-item {
         background: #f9f9f9;
         padding: 10px;
         border-radius: 8px;
         margin-bottom: 8px;
-        font-size: 14px;
         border-left: 4px solid #764ba2;
+        font-size: 14px;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>Akash's Control Panel</h2>
-      <button id="sysToggle" class="status-btn online" onclick="toggleStatus()">
-        System: ACTIVE
-      </button>
+      <h2>Akash's Admin</h2>
+      <button id="sysToggle" class="status-btn">Connecting...</button>
 
-      <div class="section">
-        <h3>Set Aishwarya's Credits</h3>
-        <input type="number" id="amt" placeholder="Enter number" />
-        <button class="update-btn" onclick="save()">Set Credits</button>
-      </div>
+      <h3>Set Aishwarya's Credits</h3>
+      <input type="number" id="amt" placeholder="Enter credits" />
+      <button class="update-btn" id="saveBtn">Update Cloud</button>
 
-      <div class="section">
-        <h3>Aishwarya's Requests</h3>
-        <div id="historyLog">No requests yet...</div>
-      </div>
-      <br />
-      <button
+      <h3 style="margin-top: 30px">Request History</h3>
+      <div id="historyLog">No requests yet.</div>
+      <br /><button
         onclick="window.location.href = 'index.html'"
-        style="
-          background: none;
-          border: none;
-          color: gray;
-          width: 100%;
-          cursor: pointer;
-        "
+        style="width: 100%; background: none; border: none; color: gray"
       >
         Logout
       </button>
     </div>
 
-    <script>
-      function toggleStatus() {
-        let s =
-          localStorage.getItem("sysStatus") === "Offline"
-            ? "Online"
-            : "Offline";
-        localStorage.setItem("sysStatus", s);
-        render();
-      }
-      function save() {
-        localStorage.setItem(
-          "totalRedeems",
-          document.getElementById("amt").value,
-        );
-        alert("Credits Updated!");
-        render();
-      }
-      function render() {
-        const s = localStorage.getItem("sysStatus") || "Online";
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+      // PASTE YOUR FIREBASE CONFIG HERE
+      const firebaseConfig = {
+        apiKey: "AIzaSyAV3pyiwrB0Cf4e4RxLyATu-i9qnWzX1kY",
+        authDomain: "sibling-help-app.firebaseapp.com",
+        projectId: "sibling-help-app",
+        storageBucket: "sibling-help-app.firebasestorage.app",
+        messagingSenderId: "563049115784",
+        appId: "1:563049115784:web:956b29e691049cc8ebaf3d",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      // Sync Status
+      onValue(ref(db, "system/status"), (snap) => {
+        const s = snap.val() || "Online";
         const btn = document.getElementById("sysToggle");
         btn.innerText = s === "Online" ? "System: ACTIVE" : "System: BUSY";
         btn.className = `status-btn ${s === "Online" ? "online" : "offline"}`;
+        btn.onclick = () =>
+          set(ref(db, "system/status"), s === "Online" ? "Offline" : "Online");
+      });
 
-        // Load History
-        const history = JSON.parse(localStorage.getItem("helpHistory") || "[]");
+      // Update Credits
+      document.getElementById("saveBtn").onclick = () => {
+        set(ref(db, "credits/total"), document.getElementById("amt").value);
+        alert("Credits updated in the Cloud!");
+      };
+
+      // Sync History & Sound
+      onValue(ref(db, "history"), (snap) => {
+        const data = snap.val();
         const log = document.getElementById("historyLog");
-        if (history.length > 0) {
-          log.innerHTML = history
-            .reverse()
+        if (data) {
+          const items = Object.values(data).reverse();
+          log.innerHTML = items
             .map(
-              (item) => `
-                    <div class="log-item">
-                        <strong>${item.date}</strong>: ${item.task}
-                    </div>
-                `,
+              (i) => `<div class="log-item"><b>${i.date}</b>: ${i.task}</div>`,
             )
             .join("");
+          new Audio(
+            "https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3",
+          ).play();
         }
-      }
-      render();
+      });
     </script>
   </body>
 </html>

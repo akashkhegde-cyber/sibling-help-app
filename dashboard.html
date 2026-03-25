@@ -8,10 +8,10 @@
       body {
         font-family: sans-serif;
         background: #eef2f3;
-        margin: 0;
         padding: 20px;
         display: flex;
         justify-content: center;
+        margin: 0;
       }
       .card {
         background: white;
@@ -23,18 +23,18 @@
         text-align: center;
       }
       .count {
-        font-size: 90px;
+        font-size: 80px;
         color: #6a11cb;
         font-weight: bold;
         margin: 10px 0;
       }
-      #statusTag {
+      .status-tag {
         font-size: 12px;
         font-weight: bold;
         padding: 5px 15px;
         border-radius: 20px;
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
       .btn-redeem {
         width: 100%;
@@ -49,49 +49,26 @@
       }
       .btn-redeem:disabled {
         background: #ccc;
+        cursor: not-allowed;
       }
-      .progress-container {
-        background: #eee;
-        height: 10px;
-        border-radius: 5px;
-        margin: 20px 0;
-        overflow: hidden;
-      }
-      .progress-bar {
-        background: #6a11cb;
-        height: 100%;
-        width: 0%;
-        transition: 1s;
+      input {
+        width: 100%;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+        font-size: 16px;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <div id="statusTag">Checking Akash's Status...</div>
-      <div class="progress-container">
-        <div id="prog" class="progress-bar"></div>
-      </div>
-
+      <div id="statusTag" class="status-tag">Connecting...</div>
       <p style="color: #888; margin: 0">Credits Available</p>
       <div class="count" id="count">0</div>
-
-      <input
-        type="text"
-        id="task"
-        placeholder="What do you need help with?"
-        style="
-          width: 100%;
-          padding: 15px;
-          margin-bottom: 15px;
-          border-radius: 10px;
-          border: 1px solid #ddd;
-          box-sizing: border-box;
-        "
-      />
-
-      <button id="redeemBtn" class="btn-redeem" onclick="redeem()">
-        Redeem 1 Day
-      </button>
+      <input type="text" id="task" placeholder="What do you need help with?" />
+      <button id="redeemBtn" class="btn-redeem">Redeem Now</button>
       <a
         href="index.html"
         style="
@@ -104,19 +81,40 @@
       >
     </div>
 
-    <script>
-      function updateUI() {
-        const status = localStorage.getItem("sysStatus") || "Online";
-        const redeems = parseInt(localStorage.getItem("totalRedeems") || 0);
-        const lifetime = parseInt(localStorage.getItem("lifetimeHelp") || 0);
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        push,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        document.getElementById("count").innerText = redeems;
-        document.getElementById("prog").style.width = (lifetime % 50) * 2 + "%";
+      // PASTE YOUR FIREBASE CONFIG HERE (Same as admin.html)
+      const firebaseConfig = {
+        apiKey: "AIzaSyAV3pyiwrB0Cf4e4RxLyATu-i9qnWzX1kY",
+        authDomain: "sibling-help-app.firebaseapp.com",
+        projectId: "sibling-help-app",
+        storageBucket: "sibling-help-app.firebasestorage.app",
+        messagingSenderId: "563049115784",
+        appId: "1:563049115784:web:956b29e691049cc8ebaf3d",
+      };
 
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      let currentCredits = 0;
+      onValue(ref(db, "credits/total"), (snap) => {
+        currentCredits = parseInt(snap.val() || 0);
+        document.getElementById("count").innerText = currentCredits;
+      });
+
+      onValue(ref(db, "system/status"), (snap) => {
+        const s = snap.val() || "Online";
         const tag = document.getElementById("statusTag");
         const btn = document.getElementById("redeemBtn");
-
-        if (status === "Offline") {
+        if (s === "Offline") {
           tag.innerText = "AKASH IS BUSY";
           tag.style.background = "#ffdce0";
           tag.style.color = "#af233a";
@@ -125,22 +123,21 @@
           tag.innerText = "AKASH IS READY";
           tag.style.background = "#d4edda";
           tag.style.color = "#155724";
-          btn.disabled = redeems <= 0;
+          btn.disabled = currentCredits <= 0;
         }
-      }
+      });
 
-      function redeem() {
-        let r = parseInt(localStorage.getItem("totalRedeems") || 0);
-        let l = parseInt(localStorage.getItem("lifetimeHelp") || 0);
-        if (r > 0) {
-          localStorage.setItem("totalRedeems", r - 1);
-          localStorage.setItem("lifetimeHelp", l + 1);
-          alert("Redeem Successful! Akash has been notified.");
-          updateUI();
-        }
-      }
-      setInterval(updateUI, 1000);
-      updateUI();
+      document.getElementById("redeemBtn").onclick = () => {
+        const taskVal = document.getElementById("task").value;
+        if (!taskVal) return alert("Type your task first!");
+        set(ref(db, "credits/total"), currentCredits - 1);
+        push(ref(db, "history"), {
+          task: taskVal,
+          date: new Date().toLocaleTimeString(),
+        });
+        document.getElementById("task").value = "";
+        alert("Request sent!");
+      };
     </script>
   </body>
 </html>

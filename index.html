@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sibling Help App - Login</title>
+    <title>Login - Help App</title>
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea, #764ba2);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -20,43 +20,42 @@
         background: white;
         padding: 30px;
         border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         width: 100%;
         max-width: 350px;
         text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
-      .pass-container {
+      .pass-group {
         position: relative;
         width: 100%;
+        margin: 10px 0;
       }
       input {
         width: 100%;
         padding: 15px;
-        margin: 10px 0;
         border: 1px solid #ddd;
         border-radius: 12px;
         box-sizing: border-box;
         font-size: 16px;
       }
-      .toggle-btn {
+      .eye-btn {
         position: absolute;
-        right: 15px;
-        top: 22px;
-        cursor: pointer;
+        right: 10px;
+        top: 12px;
         background: none;
         border: none;
-        font-size: 18px;
+        font-size: 20px;
+        cursor: pointer;
       }
-      button#loginBtn {
+      button {
         width: 100%;
         padding: 15px;
         background: #764ba2;
         color: white;
         border: none;
         border-radius: 12px;
-        cursor: pointer;
-        font-size: 18px;
         font-weight: bold;
+        cursor: pointer;
         margin-top: 10px;
       }
     </style>
@@ -65,31 +64,25 @@
     <div class="login-card">
       <h2>Help App Login</h2>
       <input type="text" id="user" placeholder="Username" />
-      <div class="pass-container">
+      <div class="pass-group">
         <input type="password" id="pass" placeholder="Password" />
-        <button class="toggle-btn" type="button" onclick="togglePass()">
-          👁️
-        </button>
+        <button class="eye-btn" type="button" onclick="togglePass()">👁️</button>
       </div>
-      <button id="loginBtn" onclick="login()">Enter</button>
+      <button onclick="login()">Enter</button>
     </div>
-
     <script>
       function togglePass() {
         const p = document.getElementById("pass");
         p.type = p.type === "password" ? "text" : "password";
       }
-
       function login() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
-        if (u === "Akash" && p === "akashforever") {
+        if (u === "Akash" && p === "akashforever")
           window.location.href = "admin.html";
-        } else if (u === "Aishwarya" && p === "AISHU123BIRTHCB19") {
+        else if (u === "Aishwarya" && p === "AISHU123BIRTHCB19")
           window.location.href = "dashboard.html";
-        } else {
-          alert("Incorrect Credentials!");
-        }
+        else alert("Incorrect Credentials!");
       }
     </script>
   </body>
