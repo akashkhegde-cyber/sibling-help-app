@@ -94,6 +94,23 @@
         border-left: 5px solid #764ba2;
         font-size: 14px;
       }
+
+      /* Quest Board Aesthetic */
+      h3 {
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 14px;
+        color: #764ba2;
+        margin-bottom: 15px;
+      }
+
+      .log-item {
+        transition: transform 0.2s;
+      }
+
+      .log-item:hover {
+        transform: scale(1.02);
+      }
     </style>
   </head>
   <body>
@@ -177,23 +194,46 @@
       };
 
       // Live History Update
+      // Updated Live History with "Complete" Button
       onValue(ref(db, "history"), (snap) => {
         const data = snap.val();
         const log = document.getElementById("historyLog");
+        log.innerHTML = ""; // Clear for refresh
+
         if (data) {
-          const items = Object.values(data).reverse();
-          log.innerHTML = items
-            .map(
-              (i) => `<div class="log-item"><b>${i.date}</b>: ${i.task}</div>`,
-            )
-            .join("");
-          new Audio(
-            "https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3",
-          ).play();
+          Object.keys(data)
+            .reverse()
+            .forEach((key) => {
+              const item = data[key];
+              const div = document.createElement("div");
+              div.className = "log-item";
+              div.style =
+                "display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ff9f43; background: #fffcf5; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);";
+
+              div.innerHTML = `
+                <div>
+                    <small style="color: #999; display: block;">${item.date}</small>
+                    <span style="font-weight: bold; color: #333;">${item.task}</span>
+                </div>
+                <button onclick="completeQuest('${key}')" style="background: #28a745; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 18px;">✓</button>
+            `;
+              log.appendChild(div);
+            });
         } else {
-          log.innerHTML = "No active requests.";
+          log.innerHTML =
+            "<p style='color: #aaa; text-align: center;'>The Board is Clear. No active quests!</p>";
         }
       });
+
+      // Function to remove a single quest
+      window.completeQuest = function (key) {
+        if (confirm("Quest Completed?")) {
+          // Haptic Feedback for Samsung
+          if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+
+          remove(ref(db, `history/${key}`));
+        }
+      };
     </script>
   </body>
 </html>
