@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Help App</title>
+    <title>Login - Sibling Help App</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
@@ -25,10 +27,14 @@
         text-align: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
+
+      /* Fixed Eye Button Alignment */
       .pass-group {
         position: relative;
         width: 100%;
         margin: 10px 0;
+        display: flex;
+        align-items: center;
       }
       input {
         width: 100%;
@@ -38,16 +44,21 @@
         box-sizing: border-box;
         font-size: 16px;
       }
+      input#pass {
+        padding-right: 45px;
+      } /* Space for eye */
+
       .eye-btn {
         position: absolute;
-        right: 10px;
-        top: 12px;
+        right: 12px;
         background: none;
         border: none;
         font-size: 20px;
         cursor: pointer;
+        color: #764ba2;
+        z-index: 10;
       }
-      button {
+      button#enter {
         width: 100%;
         padding: 15px;
         background: #764ba2;
@@ -62,14 +73,15 @@
   </head>
   <body>
     <div class="login-card">
-      <h2>Help App Login</h2>
+      <h2>Help App</h2>
       <input type="text" id="user" placeholder="Username" />
       <div class="pass-group">
         <input type="password" id="pass" placeholder="Password" />
         <button class="eye-btn" type="button" onclick="togglePass()">👁️</button>
       </div>
-      <button onclick="login()">Enter</button>
+      <button id="enter" onclick="login()">Enter</button>
     </div>
+
     <script>
       function togglePass() {
         const p = document.getElementById("pass");
@@ -82,7 +94,7 @@
           window.location.href = "admin.html";
         else if (u === "Aishwarya" && p === "AISHU123BIRTHCB19")
           window.location.href = "dashboard.html";
-        else alert("Incorrect Credentials!");
+        else alert("Incorrect Login!");
       }
     </script>
   </body>

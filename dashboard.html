@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aishwarya's Dashboard</title>
+    <title>Dashboard - Aishwarya</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
     <style>
       body {
         font-family: sans-serif;
@@ -46,6 +48,7 @@
         font-size: 18px;
         font-weight: bold;
         cursor: pointer;
+        transition: 0.3s;
       }
       .btn-redeem:disabled {
         background: #ccc;
@@ -64,19 +67,18 @@
   </head>
   <body>
     <div class="card">
-      <div id="statusTag" class="status-tag">Connecting...</div>
+      <div id="statusTag" class="status-tag">Syncing...</div>
       <p style="color: #888; margin: 0">Credits Available</p>
       <div class="count" id="count">0</div>
-      <input type="text" id="task" placeholder="What do you need help with?" />
+      <input
+        type="text"
+        id="task"
+        placeholder="Type what you need help with..."
+      />
       <button id="redeemBtn" class="btn-redeem">Redeem Now</button>
-      <a
+      <br /><br /><a
         href="index.html"
-        style="
-          display: block;
-          margin-top: 20px;
-          color: #aaa;
-          text-decoration: none;
-        "
+        style="color: #aaa; text-decoration: none"
         >Logout</a
       >
     </div>
@@ -91,11 +93,11 @@
         push,
       } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-      // PASTE YOUR FIREBASE CONFIG HERE (Same as admin.html)
       const firebaseConfig = {
         apiKey: "AIzaSyAV3pyiwrB0Cf4e4RxLyATu-i9qnWzX1kY",
         authDomain: "sibling-help-app.firebaseapp.com",
-        databaseURL: "https://sibling-help-app-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        databaseURL:
+          "https://sibling-help-app-default-rtdb.asia-southeast1.firebasedatabase.app/",
         projectId: "sibling-help-app",
         storageBucket: "sibling-help-app.firebasestorage.app",
         messagingSenderId: "563049115784",
@@ -129,15 +131,18 @@
       });
 
       document.getElementById("redeemBtn").onclick = () => {
-        const taskVal = document.getElementById("task").value;
-        if (!taskVal) return alert("Type your task first!");
+        const val = document.getElementById("task").value;
+        if (!val) return alert("Write your request first!");
         set(ref(db, "credits/total"), currentCredits - 1);
         push(ref(db, "history"), {
-          task: taskVal,
-          date: new Date().toLocaleTimeString(),
+          task: val,
+          date: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         });
         document.getElementById("task").value = "";
-        alert("Request sent!");
+        alert("Sent to Akash!");
       };
     </script>
   </body>
