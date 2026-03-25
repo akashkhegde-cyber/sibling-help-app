@@ -25,6 +25,10 @@
         max-width: 350px;
         text-align: center;
       }
+      .pass-container {
+        position: relative;
+        width: 100%;
+      }
       input {
         width: 100%;
         padding: 15px;
@@ -32,9 +36,18 @@
         border: 1px solid #ddd;
         border-radius: 12px;
         box-sizing: border-box;
-        font-size: 16px; /* 16px prevents iOS zoom on focus */
+        font-size: 16px;
       }
-      button {
+      .toggle-btn {
+        position: absolute;
+        right: 15px;
+        top: 22px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 18px;
+      }
+      button#loginBtn {
         width: 100%;
         padding: 15px;
         background: #764ba2;
@@ -44,6 +57,7 @@
         cursor: pointer;
         font-size: 18px;
         font-weight: bold;
+        margin-top: 10px;
       }
     </style>
   </head>
@@ -51,16 +65,24 @@
     <div class="login-card">
       <h2>Help App Login</h2>
       <input type="text" id="user" placeholder="Username" />
-      <input type="password" id="pass" placeholder="Password" />
-      <button onclick="login()">Enter</button>
+      <div class="pass-container">
+        <input type="password" id="pass" placeholder="Password" />
+        <button class="toggle-btn" type="button" onclick="togglePass()">
+          👁️
+        </button>
+      </div>
+      <button id="loginBtn" onclick="login()">Enter</button>
     </div>
 
     <script>
+      function togglePass() {
+        const p = document.getElementById("pass");
+        p.type = p.type === "password" ? "text" : "password";
+      }
+
       function login() {
         const u = document.getElementById("user").value;
         const p = document.getElementById("pass").value;
-
-        // UPDATED CREDENTIALS
         if (u === "Akash" && p === "akashforever") {
           window.location.href = "admin.html";
         } else if (u === "Aishwarya" && p === "AISHU123BIRTHCB19") {

@@ -35,10 +35,15 @@
       .offline {
         background: #dc3545;
       }
+      .section {
+        margin-top: 25px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+      }
       input {
         width: 100%;
         padding: 15px;
-        margin: 15px 0;
+        margin: 10px 0;
         border: 1px solid #ddd;
         border-radius: 10px;
         box-sizing: border-box;
@@ -50,26 +55,34 @@
         padding: 15px;
         width: 100%;
         border-radius: 10px;
-        font-size: 16px;
+        font-weight: bold;
       }
-      .log-box {
-        margin-top: 20px;
-        border-top: 1px solid #eee;
-        padding-top: 10px;
+      .log-item {
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        border-left: 4px solid #764ba2;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>Admin Panel</h2>
+      <h2>Akash's Control Panel</h2>
       <button id="sysToggle" class="status-btn online" onclick="toggleStatus()">
         System: ACTIVE
       </button>
 
-      <div class="log-box">
-        <h3>Set Aishwarya's Redeems</h3>
-        <input type="number" id="amt" placeholder="Number of Redeems" />
-        <button class="update-btn" onclick="save()">Update Credits</button>
+      <div class="section">
+        <h3>Set Aishwarya's Credits</h3>
+        <input type="number" id="amt" placeholder="Enter number" />
+        <button class="update-btn" onclick="save()">Set Credits</button>
+      </div>
+
+      <div class="section">
+        <h3>Aishwarya's Requests</h3>
+        <div id="historyLog">No requests yet...</div>
       </div>
       <br />
       <button
@@ -100,17 +113,30 @@
           "totalRedeems",
           document.getElementById("amt").value,
         );
-        localStorage.setItem(
-          "savedMonth",
-          new Date().toLocaleString("default", { month: "long" }),
-        );
-        alert("Sent to Aishwarya's Dashboard!");
+        alert("Credits Updated!");
+        render();
       }
       function render() {
         const s = localStorage.getItem("sysStatus") || "Online";
         const btn = document.getElementById("sysToggle");
         btn.innerText = s === "Online" ? "System: ACTIVE" : "System: BUSY";
         btn.className = `status-btn ${s === "Online" ? "online" : "offline"}`;
+
+        // Load History
+        const history = JSON.parse(localStorage.getItem("helpHistory") || "[]");
+        const log = document.getElementById("historyLog");
+        if (history.length > 0) {
+          log.innerHTML = history
+            .reverse()
+            .map(
+              (item) => `
+                    <div class="log-item">
+                        <strong>${item.date}</strong>: ${item.task}
+                    </div>
+                `,
+            )
+            .join("");
+        }
       }
       render();
     </script>
