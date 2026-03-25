@@ -8,6 +8,15 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="shortcut icon" href="icon.png?v=1" type="image/x-icon" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="theme-color" content="#764ba2" />
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
